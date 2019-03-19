@@ -1,0 +1,18 @@
+def testCases = testRunner.testCase.testSuite.getTestCaseList()
+
+testCases.each
+{
+    def len = 0
+    def count = 0
+    it.setName("Testcase_001")
+
+    for(testSteps in it.testStepList)
+    {
+    	len = len+1
+    }
+    	for (int i = 97; i < 97+len; i++) {
+    		def v = "Teststep_"+((char)i)+"_001"  		
+    		it.testStepList[count].setName(v)
+    		count++  		
+    } 
+}
