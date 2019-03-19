@@ -9,8 +9,19 @@ def testCases = testRunner.testCase.testSuite.getTestCaseList()
 testCases.each
 {
     def len = 0
+    def len1 = 0
     def count = 0
-    it.setName("Testcase_001")
+    def k = 1
+
+    for(testC in testCases)
+    {
+    	len1 = len1+1
+    }
+    for(int j=0; j<len1; j++){
+    def s = "Testcase_00"+k+""		
+    testCases[j].setName(s)
+    k++
+    }
 
     for(testSteps in it.testStepList)
     {
@@ -19,6 +30,6 @@ testCases.each
     	for (int i = 97; i < 97+len; i++) {
     		def v = "Teststep_"+((char)i)+"_001"  		
     		it.testStepList[count].setName(v)
-    		count++  		
+    		count++  	
     } 
 }
