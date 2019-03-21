@@ -1,0 +1,29 @@
+import groovy.json.JsonSlurper
+
+def json = '''{
+   "items" : [
+      {
+         "id" : "48223",
+         "name" : "LAI-00151007",
+         "amount" : "25050.0",
+         "interest_rate" : "25.99",
+         "term" : "60",
+      },
+      {
+         "id" : "48262",
+         "name" : "LAI-00152581",
+         "amount" : "44225.0",
+         "interest_rate" : "18.9",
+         "term" : "36",
+      }
+   ],
+   "total_count" : "13"
+}'''
+
+def jsonSlurper = new JsonSlurper()
+def obj = jsonSlurper.parseText(json)
+
+obj.items.each{
+	if(it.name == 'LAI-00152581')
+     log.info it.id
+}
