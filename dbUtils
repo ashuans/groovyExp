@@ -1,0 +1,105 @@
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLSyntaxErrorException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Level;
+
+public class DataBaseUtil{
+
+	//Database
+	private Connection dbConnection;
+	private Statement dbStatement; 
+	private ResultSet dbResultSet;
+
+
+	public void EstablishConnection(String dbName) throws Exception{
+		String dbUrl = null; 
+		String username = null;   
+		String password = null; 
+		if(dbName.equalsIgnoreCase("qa")){
+			dbUrl = "";
+			username = "";   
+			password = ""; 
+		}else if(dbName.equalsIgnoreCase("int")){
+			dbUrl = "";
+			username = "";   
+			password = ""; 
+		}else{
+			dbUrl = "";
+			username = "";   
+			password = "";
+		}
+		//Connection URL Syntax: "jdbc:mysql://ipaddress:portnumber/db_name"      
+
+		try {
+
+			try {
+				Class.forName("oracle.jdbc.driver.OracleDriver");
+			} catch (ClassNotFoundException e) {
+				Environment.loger.log(Level.ERROR, "ClassNotFoundException occured! Check with the dependencies");
+			}
+			//Create Connection to DB       
+			dbConnection = DriverManager.getConnection(dbUrl,username,password);
+			Environment.loger.log(Level.INFO, "Connection successfully established with DB!");
+
+			//Create Statement Object       
+			dbStatement = dbConnection.createStatement();
+		}catch(SQLSyntaxErrorException e){
+			Environment.loger.log(Level.ERROR, "Syntax error! Pass the proper SQL query");
+		}catch(SQLException  e) {
+			Environment.loger.log(Level.ERROR, "SQLException Exception occured"+e.getMessage());
+		}catch(Exception e){
+			Environment.loger.log(Level.ERROR, "Exception occured",e);
+			throw e;
+		}
+	}
+
+	public List<String> GetColumnValues(String query, String ColumnName){
+		List<String> ReturnText = new ArrayList<String>();
+		try {
+			dbResultSet = ExecuteQuery(query);
+			while(dbResultSet.next()){
+				ReturnText.add(dbResultSet.getString(ColumnName));
+			}
+		} catch (SQLException e) {
+			Environment.loger.log(Level.ERROR, "SQLException Exception occured"+e.getMessage());
+		}
+		return ReturnText;
+	}
+
+	private ResultSet ExecuteQuery(String query){
+		try{
+			dbResultSet = dbStatement.executeQuery(query);   
+		}catch(SQLException e){
+			Environment.loger.log(Level.ERROR, "SQLException Exception occured"+e.getMessage());
+		}
+		return dbResultSet;
+	}
+
+	public int CallProcedure(String procedure){//TODO
+		CallableStatement cstmt = null ;
+		int sReturn = -1 ;
+		try{
+			cstmt = dbConnection.prepareCall(procedure);
+//			cstmt.setString(1, "read");
+			sReturn = cstmt.executeUpdate();
+//			cstmt.getString(0);
+		}catch(SQLException e){
+			Environment.loger.log(Level.ERROR, "SQLException Exception occured"+e.getMessage());
+		}finally{
+			try {
+				cstmt.close();
+			} catch (SQLException e) {
+				Environment.loger.log(Level.ERROR, "Unable to close the callprocedure"+e.getMessage());
+			}
+		}
+		return sReturn;
+	}
+
+}
